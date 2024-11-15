@@ -1,0 +1,41 @@
+.letter {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: 1px solid #ddd;
+  margin: 2px;
+  text-transform: uppercase;
+}
+
+.letter.correct {
+  background-color: #538d4e;
+  color: white;
+}
+
+.letter.present {
+  background-color: #b59f3b;
+  color: white;
+}
+
+.letter.absent {
+  background-color: #3a3a3c;
+  color: white;
+}
+
+.letter.empty {
+  background-color: #0e0f10;
+}
+
+.attempt-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.game-panel {
+  background-color: #0e0f10;
+}
