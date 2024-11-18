@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { MAX_ATTEMPTS, WORD_LENGTH } from "@renderer/types/Constants";
 import { GameState, Word, LetterState, Letter } from "@renderer/types/GameTypes";
 import Board from "./Board";
 import Keyboard from "./Keyboard";
+import "../styles/GamePanel.css";
 
 const emptyRow = (): Word => ({
   letters: Array(WORD_LENGTH).fill({ character: "", state: "empty" as LetterState })
@@ -19,28 +20,52 @@ const initialGameState: GameState = {
 const GamePanel: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
   const [currentGuess, setCurrentGuess] = useState("");
+  const lastKey = useRef<string | null>(null); // track the last key pressed across renders
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newGuess = e.target.value.toLowerCase().slice(0, WORD_LENGTH);
-    setCurrentGuess(newGuess);
+  // create a ref for the div
+  const gamePanelRef = useRef<HTMLDivElement>(null);
 
+  // Focus the div when the component mounts
+  useEffect(() => {
+    if (gamePanelRef.current) {
+      gamePanelRef.current.focus();
+    }
+  }, []);
+
+  const handleKeyPress = (key: string) => {
     setGameState((prevState) => {
       const updatedBoard = [...prevState.board];
+      const currentAttemptIndex = prevState.curAttempt;
 
-      const attemptLetters = newGuess
+      let updatedGuess = currentGuess;
+
+      if (key === "Enter") {
+        handleGuess();
+        return prevState; // no changes to the board until the guess is processed
+      } else if (key === "Backspace") {
+        updatedGuess = updatedGuess.slice(0, -1); // remove last character for backspace
+      } else if (/^[a-zA-Z]$/.test(key) && updatedGuess.length < WORD_LENGTH) {
+        updatedGuess += key.toLowerCase(); // add the pressed key
+      }
+
+      setCurrentGuess(updatedGuess);
+
+      // update the current row's letters
+      const attemptLetters = updatedGuess
         .split("")
-        .map((char, _) => ({ character: char, state: "empty" }))
-        .concat(Array(5 - newGuess.length).fill({ character: "", state: "empty" })) as Letter[];
+        .map((char) => ({ character: char, state: "empty" } as Letter))
+        .concat(
+          Array(WORD_LENGTH - updatedGuess.length).fill({ character: "", state: "empty" })
+        ) as Letter[];
 
-      updatedBoard[gameState.curAttempt] = { letters: attemptLetters };
+      updatedBoard[currentAttemptIndex] = { letters: attemptLetters };
+
       return { ...prevState, board: updatedBoard };
     });
   };
 
   const handleGuess = () => {
-    // block wrong length words and more than max attempts
-    if (currentGuess.length !== WORD_LENGTH) return;
-    if (gameState.curAttempt == MAX_ATTEMPTS) return;
+    if (currentGuess.length !== WORD_LENGTH || gameState.curAttempt === MAX_ATTEMPTS) return;
 
     const newAttempt: Word = {
       letters: currentGuess.split("").map((char, index) => {
@@ -65,19 +90,34 @@ const GamePanel: React.FC = () => {
     setCurrentGuess(""); // reset the current guess after processing
   };
 
-  return (
-    <div>
-      <h2>Welcome to the Wordle Game</h2>
-      <Board gameState={gameState} />
-      <Keyboard />
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    event.preventDefault(); // prevent default behavior
 
-      <input
-        type="text"
-        value={currentGuess}
-        onChange={handleInputChange}
-        maxLength={gameState.currentWord.length} // Ensure input matches word length
-      />
-      <button onClick={handleGuess}>Submit Guess</button>
+    // only process if the key is different from the last key pressed
+    if (lastKey.current !== event.key) {
+      lastKey.current = event.key; 
+      handleKeyPress(event.key); 
+    }
+  };
+
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    // reset last key when the key is released
+    if (lastKey.current === event.key) {
+      lastKey.current = null;
+    }
+  };
+
+  return (
+    <div
+      className="full-page"
+      ref={gamePanelRef} // attach the ref to the div
+      tabIndex={0} // make div focusable
+      onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
+      style={{ outline: "none", height: "100vh", display: "flex", flexDirection: "column" }} // Remove focus outline
+    >
+      <Board gameState={gameState} />
+      <Keyboard onKeyPress={handleKeyPress} />
     </div>
   );
 };
