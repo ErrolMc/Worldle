@@ -19,13 +19,13 @@ const initialGameState: GameState = {
 
 const GamePanel: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
-  const [currentGuess, setCurrentGuess] = useState("");
+  const currentGuess = useRef<string>("");
   const lastKey = useRef<string | null>(null); // track the last key pressed across renders
 
   // create a ref for the div
   const gamePanelRef = useRef<HTMLDivElement>(null);
 
-  // Focus the div when the component mounts
+  // focus the div when the component mounts
   useEffect(() => {
     if (gamePanelRef.current) {
       gamePanelRef.current.focus();
@@ -33,42 +33,46 @@ const GamePanel: React.FC = () => {
   }, []);
 
   const handleKeyPress = (key: string) => {
+    if (key === "Enter") {
+      handleGuess();
+      return;
+    }
+  
+    let updatedGuess = currentGuess.current;
+  
+    if (key === "Backspace") {
+      updatedGuess = updatedGuess.slice(0, -1);
+    } else if (/^[a-zA-Z]$/.test(key) && updatedGuess.length < WORD_LENGTH) {
+      updatedGuess += key.toLowerCase();
+    }
+  
+    currentGuess.current = updatedGuess;
+    updateBoard(updatedGuess);
+  };
+
+  const updateBoard = (guess: string) => {
     setGameState((prevState) => {
       const updatedBoard = [...prevState.board];
       const currentAttemptIndex = prevState.curAttempt;
-
-      let updatedGuess = currentGuess;
-
-      if (key === "Enter") {
-        handleGuess();
-        return prevState; // no changes to the board until the guess is processed
-      } else if (key === "Backspace") {
-        updatedGuess = updatedGuess.slice(0, -1); // remove last character for backspace
-      } else if (/^[a-zA-Z]$/.test(key) && updatedGuess.length < WORD_LENGTH) {
-        updatedGuess += key.toLowerCase(); // add the pressed key
-      }
-
-      setCurrentGuess(updatedGuess);
-
-      // update the current row's letters
-      const attemptLetters = updatedGuess
+  
+      const attemptLetters = guess
         .split("")
         .map((char) => ({ character: char, state: "empty" } as Letter))
         .concat(
-          Array(WORD_LENGTH - updatedGuess.length).fill({ character: "", state: "empty" })
+          Array(WORD_LENGTH - guess.length).fill({ character: "", state: "empty" })
         ) as Letter[];
-
+  
       updatedBoard[currentAttemptIndex] = { letters: attemptLetters };
-
+  
       return { ...prevState, board: updatedBoard };
     });
   };
 
   const handleGuess = () => {
-    if (currentGuess.length !== WORD_LENGTH || gameState.curAttempt === MAX_ATTEMPTS) return;
+    if (currentGuess.current.length !== WORD_LENGTH || gameState.curAttempt === MAX_ATTEMPTS) return;
 
     const newAttempt: Word = {
-      letters: currentGuess.split("").map((char, index) => {
+      letters: currentGuess.current.split("").map((char, index) => {
         let state: LetterState = "absent";
         if (gameState.currentWord[index] === char.toLowerCase()) {
           state = "correct";
@@ -87,7 +91,7 @@ const GamePanel: React.FC = () => {
       board: newBoard,
       curAttempt: prevState.curAttempt + 1
     }));
-    setCurrentGuess(""); // reset the current guess after processing
+    currentGuess.current = ""; // reset the current guess after processing
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
