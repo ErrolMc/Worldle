@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { MAX_ATTEMPTS, WORD_LENGTH } from "../types/Constants";
+import { MAX_ATTEMPTS, WORD_LENGTH } from "@renderer/types/Constants";
 import { GameState, Word, LetterState, Letter } from "@renderer/types/GameTypes";
 import Board from "./Board";
+import Keyboard from "./Keyboard";
 
 const emptyRow = (): Word => ({
   letters: Array(WORD_LENGTH).fill({ character: "", state: "empty" as LetterState })
@@ -27,9 +28,9 @@ const GamePanel: React.FC = () => {
       const updatedBoard = [...prevState.board];
 
       const attemptLetters = newGuess
-          .split("")
-          .map((char, _) => ({ character: char, state: "empty" }))
-          .concat(Array(5 - newGuess.length).fill({ character: "", state: "empty" })) as Letter[];
+        .split("")
+        .map((char, _) => ({ character: char, state: "empty" }))
+        .concat(Array(5 - newGuess.length).fill({ character: "", state: "empty" })) as Letter[];
 
       updatedBoard[gameState.curAttempt] = { letters: attemptLetters };
       return { ...prevState, board: updatedBoard };
@@ -68,6 +69,7 @@ const GamePanel: React.FC = () => {
     <div>
       <h2>Welcome to the Wordle Game</h2>
       <Board gameState={gameState} />
+      <Keyboard />
 
       <input
         type="text"
