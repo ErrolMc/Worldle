@@ -19,7 +19,7 @@ const GamePanel: React.FC = () => {
       style={{ outline: "none" }} // Remove focus outline
     >
       <Board gameState={gameState} />
-      <Keyboard onKeyPress={handleKeyPress} />
+      <Keyboard onKeyPress={handleKeyPress} keyboardLetterStates={gameState.keyboardLetterStates} />
     </div>
   );
 };

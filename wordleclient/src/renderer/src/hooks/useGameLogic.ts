@@ -11,7 +11,8 @@ const initialGameState: GameState = {
   board: Array(MAX_ATTEMPTS)
     .fill(null)
     .map(() => emptyRow()),
-  curAttempt: 0
+  curAttempt: 0,
+  keyboardLetterStates: {}
 };
 
 export function useGameLogic() {
@@ -40,14 +41,30 @@ export function useGameLogic() {
   const handleGuess = () => {
     if (currentGuess.current.length !== WORD_LENGTH || gameState.curAttempt === MAX_ATTEMPTS) return;
 
+    const newKeyboardLetterStates = gameState.keyboardLetterStates;
+
     const newAttempt: Word = {
       letters: currentGuess.current.split("").map((char, index) => {
         let state: LetterState = "absent";
+
+        // set the state
         if (gameState.currentWord[index] === char.toLowerCase()) {
           state = "correct";
         } else if (gameState.currentWord.includes(char)) {
           state = "present";
         }
+
+        // update the keyboard letter states
+        if (!newKeyboardLetterStates.hasOwnProperty(char)) {
+            newKeyboardLetterStates[char] = state;
+        }
+        else if (newKeyboardLetterStates[char] === "absent" && state !== "absent") {
+            newKeyboardLetterStates[char] = state;
+        }
+        else if (newKeyboardLetterStates[char] === "present" && state === "correct") {
+            newKeyboardLetterStates[char] = state;
+        }
+
         return { character: char, state };
       })
     };
@@ -58,7 +75,8 @@ export function useGameLogic() {
     setGameState((prevState) => ({
       ...prevState,
       board: newBoard,
-      curAttempt: prevState.curAttempt + 1
+      curAttempt: prevState.curAttempt + 1,
+      keyboardLetterStates: newKeyboardLetterStates
     }));
     currentGuess.current = "";
   };

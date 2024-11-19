@@ -13,4 +13,5 @@ export interface GameState {
   currentWord: string;
   board: Word[];
   curAttempt: number;
+  keyboardLetterStates: Record<string, LetterState>;
 }

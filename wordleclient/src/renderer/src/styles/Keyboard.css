@@ -26,9 +26,13 @@
   justify-content: center;
   transition: background-color 0.2s;
 }
- 
+
 .key:hover {
   background-color: #5a5d60;
+}
+
+.key:active {
+  background-color: #4b4e50;
 }
 
 .special-key {
@@ -36,6 +40,41 @@
   font-size: 0.9rem;
 }
 
-.key:active {
-  background-color: #4b4e50;
+.key.correct {
+  background-color: #538d4e;
+  color: white;
+}
+
+.key.correct:hover {
+  background-color: #4a7c44;
+}
+
+.key.correct:active {
+  background-color: #3e6b3a;
+}
+
+.key.present {
+  background-color: #b59f3b;
+  color: white;
+}
+
+.key.present:hover {
+  background-color: #a68b35;
+}
+
+.key.present:active {
+  background-color: #8f7a2f;
+}
+
+.key.absent {
+  background-color: #3a3a3c;
+  color: white;
+}
+
+.key.absent:hover {
+  background-color: #333335;
+}
+
+.key.absent:active {
+  background-color: #2c2c2e;
 }
