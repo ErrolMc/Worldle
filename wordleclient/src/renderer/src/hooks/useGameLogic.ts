@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef } from "react";
 import { MAX_ATTEMPTS, WORD_LENGTH } from "@renderer/types/Constants";
 import { GameState, Word, LetterState, Letter } from "@renderer/types/GameTypes";
+import { getDictionaryService } from "@renderer/services/DictionaryService";
 
 const emptyRow = (): Word => ({
   letters: Array(WORD_LENGTH).fill({ character: "", state: "empty" as LetterState })
@@ -17,29 +18,38 @@ const initialGameState: GameState = {
 
 export function useGameLogic() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
+  const [wrongWordPopupVisible, setWrongWordPopupVisible] = useState(false);
   const currentGuess = useRef<string>("");
   const lastKey = useRef<string | null>(null);
+  const dictionaryService = getDictionaryService();
 
   const updateBoard = (guess: string) => {
     setGameState((prevState) => {
       const updatedBoard = [...prevState.board];
       const currentAttemptIndex = prevState.curAttempt;
-  
+
       const attemptLetters = guess
         .split("")
-        .map((char) => ({ character: char, state: "empty" } as Letter))
+        .map((char) => ({ character: char, state: "empty" }) as Letter)
         .concat(
           Array(WORD_LENGTH - guess.length).fill({ character: "", state: "empty" })
         ) as Letter[];
-  
+
       updatedBoard[currentAttemptIndex] = { letters: attemptLetters };
-  
+
       return { ...prevState, board: updatedBoard };
     });
   };
 
   const handleGuess = () => {
-    if (currentGuess.current.length !== WORD_LENGTH || gameState.curAttempt === MAX_ATTEMPTS) return;
+    if (currentGuess.current.length !== WORD_LENGTH || gameState.curAttempt === MAX_ATTEMPTS)
+      return;
+
+    if (!dictionaryService.isWordValid(currentGuess.current)) {
+      setWrongWordPopupVisible(true);
+      setTimeout(() => setWrongWordPopupVisible(false), 1000);
+      return;
+    }
 
     const newKeyboardLetterStates = gameState.keyboardLetterStates;
 
@@ -56,13 +66,11 @@ export function useGameLogic() {
 
         // update the keyboard letter states
         if (!newKeyboardLetterStates.hasOwnProperty(char)) {
-            newKeyboardLetterStates[char] = state;
-        }
-        else if (newKeyboardLetterStates[char] === "absent" && state !== "absent") {
-            newKeyboardLetterStates[char] = state;
-        }
-        else if (newKeyboardLetterStates[char] === "present" && state === "correct") {
-            newKeyboardLetterStates[char] = state;
+          newKeyboardLetterStates[char] = state;
+        } else if (newKeyboardLetterStates[char] === "absent" && state !== "absent") {
+          newKeyboardLetterStates[char] = state;
+        } else if (newKeyboardLetterStates[char] === "present" && state === "correct") {
+          newKeyboardLetterStates[char] = state;
         }
 
         return { character: char, state };
@@ -86,15 +94,15 @@ export function useGameLogic() {
       handleGuess();
       return;
     }
-  
+
     let updatedGuess = currentGuess.current;
-  
+
     if (key === "Backspace") {
       updatedGuess = updatedGuess.slice(0, -1);
     } else if (/^[a-zA-Z]$/.test(key) && updatedGuess.length < WORD_LENGTH) {
       updatedGuess += key.toLowerCase();
     }
-  
+
     currentGuess.current = updatedGuess;
     updateBoard(updatedGuess);
   };
@@ -103,8 +111,8 @@ export function useGameLogic() {
     event.preventDefault();
 
     if (lastKey.current !== event.key) {
-      lastKey.current = event.key; 
-      handleKeyPress(event.key); 
+      lastKey.current = event.key;
+      handleKeyPress(event.key);
     }
   };
 
@@ -118,6 +126,7 @@ export function useGameLogic() {
     gameState,
     handleKeyPress,
     handleKeyDown,
-    handleKeyUp
+    handleKeyUp,
+    wrongWordPopupVisible
   };
 }
