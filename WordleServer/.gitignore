@@ -1,0 +1,20 @@
+# Rider-specific files
+.idea/
+*.iml
+
+# Build directories
+bin/
+obj/
+
+# Rider-generated files
+*.user
+*.nuget.cache
+*.nuget.dgspec.json
+*.csproj.nuget.g.props
+*.csproj.nuget.g.targets
+
+# Logs and temporary files
+*.log
+
+# Local settings
+Properties/launchSettings.json

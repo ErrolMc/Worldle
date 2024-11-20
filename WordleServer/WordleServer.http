@@ -1,0 +1,6 @@
+@WordleServer_HostAddress = http://localhost:5249
+
+GET {{WordleServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
