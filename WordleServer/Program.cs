@@ -13,7 +13,7 @@ namespace WordleServer
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             IServiceCollection services = builder.Services;
-        
+
             // Add services to the container.
             services.AddControllers();
             services.AddAuthorization();
@@ -21,15 +21,15 @@ namespace WordleServer
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            
+
             services.AddScoped<IUserRepository, UserRepository>();
-            
+
             services.AddSingleton<Database>((s) =>
             {
                 var cosmosClient = new CosmosClient(Constants.COSMOS_CONNECTION_STRING);
                 return cosmosClient.GetDatabase(Constants.COSMOS_DATABASE_NAME);
             });
-            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -44,21 +44,16 @@ namespace WordleServer
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.JWT_SIGNING_KEY))
                     };
                 });
-
-            bool usingCors = !string.IsNullOrEmpty(Constants.WEB_APP_URI);
             
-            if (usingCors)
+            services.AddCors(options =>
             {
-                services.AddCors(options =>
+                options.AddDefaultPolicy(corsBuilder =>
                 {
-                    options.AddDefaultPolicy(corsBuilder =>
-                    {
-                        corsBuilder.WithOrigins(Constants.WEB_APP_URI)
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-                    });
+                    corsBuilder.WithOrigins(Constants.WEB_APP_URI, Constants.ELECTRON_APP_URI)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
                 });
-            }
+            });
             
             WebApplication app = builder.Build();
 
@@ -68,9 +63,8 @@ namespace WordleServer
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            if (usingCors)
-                app.UseCors();
+            
+            app.UseCors();
             
             app.UseHttpsRedirection();
             

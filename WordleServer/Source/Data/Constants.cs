@@ -5,6 +5,7 @@ namespace WordleServer.Data
         // constants (doesnt matter if other people see this stuff)
         public const string USERS_CONTAINER_NAME = "users";
         public const string ELECTRON_APP_AUDIENCE = "WordleElectronApp";
+        public const string ELECTRON_APP_URI = "http://localhost:5173";
         
         // environment variables (stuff that can be changed or is secret)
         public static string COSMOS_CONNECTION_STRING => Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING");
