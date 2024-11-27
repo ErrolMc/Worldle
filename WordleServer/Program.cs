@@ -15,6 +15,7 @@ namespace WordleServer
             IServiceCollection services = builder.Services;
         
             // Add services to the container.
+            services.AddControllers();
             services.AddAuthorization();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -43,16 +44,21 @@ namespace WordleServer
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.JWT_SIGNING_KEY))
                     };
                 });
+
+            bool usingCors = !string.IsNullOrEmpty(Constants.WEB_APP_URI);
             
-            services.AddCors(options =>
+            if (usingCors)
             {
-                options.AddDefaultPolicy(corsBuilder =>
+                services.AddCors(options =>
                 {
-                    corsBuilder.WithOrigins(Constants.WEB_APP_URI)
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
+                    options.AddDefaultPolicy(corsBuilder =>
+                    {
+                        corsBuilder.WithOrigins(Constants.WEB_APP_URI)
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
                 });
-            });
+            }
             
             WebApplication app = builder.Build();
 
@@ -63,11 +69,15 @@ namespace WordleServer
                 app.UseSwaggerUI();
             }
 
-            app.UseCors();
+            if (usingCors)
+                app.UseCors();
+            
             app.UseHttpsRedirection();
             
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapControllers();
 
             app.Run();
         }

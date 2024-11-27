@@ -32,9 +32,11 @@ namespace WordleServer.Controllers
                 return BadRequest("Username already exists");
             }
 
+            string userID = Guid.NewGuid().ToString();
             var user = new User()
             {
-                Id = Guid.NewGuid().ToString(),
+                ID = userID,
+                UserID = userID,
                 Username = request.Username,
                 PasswordHash = HashPassword(request.Password),
             };
@@ -76,7 +78,7 @@ namespace WordleServer.Controllers
             // define token claims
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Sub, user.ID),
                 new Claim(JwtRegisteredClaimNames.Name, user.Username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };

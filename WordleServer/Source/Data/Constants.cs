@@ -3,7 +3,7 @@ namespace WordleServer.Data
     public static class Constants
     {
         // constants (doesnt matter if other people see this stuff)
-        public const string USERS_CONTAINER_NAME = "Users";
+        public const string USERS_CONTAINER_NAME = "users";
         public const string ELECTRON_APP_AUDIENCE = "WordleElectronApp";
         
         // environment variables (stuff that can be changed or is secret)

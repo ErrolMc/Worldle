@@ -51,7 +51,7 @@ namespace WordleServer.DB
         {
             try
             {
-                ItemResponse<User> resp = await _container.CreateItemAsync(user, new PartitionKey(user.Id));
+                ItemResponse<User> resp = await _container.CreateItemAsync(user, new PartitionKey(user.ID));
                 return resp != null;   
             }
             catch (Exception e)
