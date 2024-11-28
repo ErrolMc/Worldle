@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthService } from "../services/AuthService";
 
-const LoginForm: React.FC = () => {
+import "../styles/LoginRegisterForm.css";
+
+const LoginForm: React.FC<{ setIsLogin: React.Dispatch<React.SetStateAction<boolean>> }> = ({
+  setIsLogin
+}) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -17,7 +21,6 @@ const LoginForm: React.FC = () => {
     try {
       const token = await AuthService.login(username, password);
       // Store the token as needed
-      alert("Login successful!");
       navigate("/game");
     } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -27,30 +30,38 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <div>
+      <div className="form-container">
+        <h1>Login</h1>
+        <form onSubmit={handleLogin}>
+          <div className="input-group">
+            <label>Username:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label>Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div className="button-group">
+            <button type="submit" disabled={isLoading} style={{ width: "130px" }}>
+              {isLoading ? "Logging in..." : "Login"}
+            </button>
+            <button onClick={() => setIsLogin(false)}>Switch to Register</button>
+          </div>
+        </form>
+      </div>
       {error && <div className="error-message">{error}</div>}
-      <div>
-        <label>Username:</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
-      <button type="submit" disabled={isLoading}>
-        {isLoading ? "Logging in..." : "Login"}
-      </button>
-    </form>
+    </div>
   );
 };
 

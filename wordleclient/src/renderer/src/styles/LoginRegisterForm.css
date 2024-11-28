@@ -1,0 +1,87 @@
+.error-message {
+  color: #ff4444;
+  background-color: #ffffff00;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  height: 20px;
+}
+
+.success-message {
+  color: #4caf50;
+  background-color: #ffffff00;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  height: 20px;
+}
+
+h1 {
+  font-weight: 500;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.form-container {
+  background-color: #313338;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  padding: 20px;
+  width: 325px;
+  margin-bottom: 10px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.input-group {
+  margin-bottom: 5px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 3px;
+  color: white;
+}
+
+.input-group input {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #202127;
+  border: 1px solid #ffffff;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #6988e6;
+}
+
+button {
+  background-color: #6b6e70;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: #5a5d60;
+}
+
+button:active {
+  background-color: #4b4e50;
+}
