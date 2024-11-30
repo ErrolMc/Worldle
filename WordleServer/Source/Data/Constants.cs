@@ -4,6 +4,7 @@ namespace WordleServer.Data
     {
         // constants (doesnt matter if other people see this stuff)
         public const string USERS_CONTAINER_NAME = "users";
+        public const string GAMES_CONTAINER_NAME = "games";
         public const string ELECTRON_APP_AUDIENCE = "WordleElectronApp";
         public const string ELECTRON_APP_URI = "http://localhost:5173";
         

@@ -23,6 +23,7 @@ namespace WordleServer
             services.AddSwaggerGen();
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IGameRepository, GameRepository>();
 
             services.AddSingleton<Database>((s) =>
             {
