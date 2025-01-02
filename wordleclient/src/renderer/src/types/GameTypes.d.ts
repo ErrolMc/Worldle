@@ -15,3 +15,20 @@ export interface GameState {
   curAttempt: number;
   keyboardLetterStates: Record<string, LetterState>;
 }
+
+export interface GameResultRequest {
+  userID: string;
+  guesses: number;
+  wordOfDayPlayed: string;
+  isWin: boolean;
+}
+
+export interface HasUserPlayedResponse {
+  hasPlayed: boolean;
+}
+
+export interface LocalGameResult {
+  isWin: boolean;
+  guesses: number;
+  wordOfDayPlayed: string;
+}

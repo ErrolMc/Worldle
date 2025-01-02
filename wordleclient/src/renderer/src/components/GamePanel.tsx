@@ -1,17 +1,55 @@
-import "../styles/GamePanel.css";
+import React, { useEffect, useRef } from "react";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useGameLogic } from "../hooks/useGameLogic";
+import { CURRENT_WORD_KEY, GAME_RESULT_KEY } from "@renderer/types/LocalStorageKeys";
+import { GAME_INIT_ROUTE, GAME_OVER_ROUTE } from "@renderer/types/RouteNames";
+import { LocalGameResult } from "@renderer/types/GameTypes";
 
 import Board from "./Board";
 import Keyboard from "./Keyboard";
 import Popup from "./Popup";
 
-import { useGameLogic } from "../hooks/useGameLogic";
-import { useRef } from "react";
+import "../styles/GamePanel.css";
 
 const GamePanel: React.FC = () => {
-  // create a ref for the div
+  const navigate: NavigateFunction = useNavigate();
+  const currentWord: string | null = localStorage.getItem(CURRENT_WORD_KEY);
+
+  if (!currentWord) {
+    // if the word is not available, redirect back to the initializer
+    navigate(GAME_INIT_ROUTE);
+    return null;
+  }
+
   const gamePanelRef = useRef<HTMLDivElement>(null);
-  const { gameState, handleKeyPress, handleKeyDown, handleKeyUp, wrongWordPopupVisible } =
-    useGameLogic();
+
+  const {
+    gameState,
+    handleKeyPress,
+    handleKeyDown,
+    handleKeyUp,
+    wrongWordPopupVisible,
+    gameOver,
+    isWin
+  } = useGameLogic(currentWord);
+
+  // handle game completion
+  useEffect(() => {
+    if (gameOver) {
+      // store game result in localStorage for GameOver component
+      localStorage.setItem(
+        GAME_RESULT_KEY,
+        JSON.stringify({
+          isWin: isWin,
+          guesses: gameState.curAttempt,
+          wordOfDayPlayed: currentWord
+        } as LocalGameResult)
+      );
+
+      // Navigate to GameOver component
+      navigate(GAME_OVER_ROUTE);
+    }
+  }, [gameOver, isWin]);
 
   return (
     <div

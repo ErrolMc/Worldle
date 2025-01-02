@@ -1,10 +1,12 @@
+using Newtonsoft.Json;
+
 namespace WordleServer.Data
 {
     public class LoginRequest
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string AudienceURI { get; set; }
+        [JsonProperty("username")] public string Username { get; set; }
+        [JsonProperty("password")] public string Password { get; set; }
+        [JsonProperty("audienceURI")] public string AudienceURI { get; set; }
     }
 }
 

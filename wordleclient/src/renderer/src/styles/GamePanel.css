@@ -1,13 +1,22 @@
 .full-page {
-  height: 100vh; 
+  height: 100vh;
   width: 100vw;
-  display: flex; 
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #0e0f10;
-  margin: 0; 
-  padding: 0; 
-  box-sizing: border-box; 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   outline: "none";
+}
+
+.full-page h2 {
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.full-page p {
+  color: #888888;
 }

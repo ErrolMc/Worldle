@@ -18,7 +18,9 @@ namespace WordleServer.Controllers
         [HttpGet("wotd")]
         public async Task<IActionResult> GetWordOfTheDay()
         {
-            return Ok(await Task.FromResult(WordList.GetWordOfTheDay()));
+            string wotd = WordList.GetWordOfTheDay();
+            Console.WriteLine($"Getting wotd: {wotd}");
+            return Ok(await Task.FromResult(wotd));
         }
         
         [HttpPost("report")]
@@ -42,7 +44,7 @@ namespace WordleServer.Controllers
                 {
                     ID = Guid.NewGuid().ToString(),
                     UserID = request.UserID,
-                    DatePlayed = DateTime.UtcNow,
+                    DatePlayed = DateTime.UtcNow.Date,
                     WordOfTheDay = request.WordOfDayPlayed,
                     Guesses = request.Guesses,
                     IsWin = request.IsWin

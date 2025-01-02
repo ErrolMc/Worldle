@@ -7,18 +7,20 @@ const emptyRow = (): Word => ({
   letters: Array(WORD_LENGTH).fill({ character: "", state: "empty" as LetterState })
 });
 
-const initialGameState: GameState = {
-  currentWord: "react",
+const createInitialGameState = (currentWord: string): GameState => ({
+  currentWord,
   board: Array(MAX_ATTEMPTS)
     .fill(null)
     .map(() => emptyRow()),
   curAttempt: 0,
   keyboardLetterStates: {}
-};
+});
 
-export function useGameLogic() {
-  const [gameState, setGameState] = useState<GameState>(initialGameState);
+export function useGameLogic(currentWord: string) {
+  const [gameState, setGameState] = useState<GameState>(createInitialGameState(currentWord));
   const [wrongWordPopupVisible, setWrongWordPopupVisible] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+  const [isWin, setIsWin] = useState(false);
   const currentGuess = useRef<string>("");
   const lastKey = useRef<string | null>(null);
   const dictionaryService = getDictionaryService();
@@ -86,6 +88,15 @@ export function useGameLogic() {
       curAttempt: prevState.curAttempt + 1,
       keyboardLetterStates: newKeyboardLetterStates
     }));
+
+    if (currentGuess.current.toLowerCase() === gameState.currentWord.toLowerCase()) {
+      setIsWin(true);
+      setGameOver(true);
+    } else if (gameState.curAttempt + 1 === MAX_ATTEMPTS) {
+      setIsWin(false);
+      setGameOver(true);
+    }
+
     currentGuess.current = "";
   };
 
@@ -127,6 +138,8 @@ export function useGameLogic() {
     handleKeyPress,
     handleKeyDown,
     handleKeyUp,
-    wrongWordPopupVisible
+    wrongWordPopupVisible,
+    gameOver,
+    isWin
   };
 }

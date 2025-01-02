@@ -1,10 +1,12 @@
+using Newtonsoft.Json;
+
 namespace WordleServer.Data
 {
     public class GameResultRequest
     {
-        public string UserID { get; set; }
-        public int Guesses { get; set; }
-        public string WordOfDayPlayed { get; set; }
-        public bool IsWin { get; set; }
+        [JsonProperty("userID")] public string UserID { get; set; }
+        [JsonProperty("guesses")] public int Guesses { get; set; }
+        [JsonProperty("wordOfDayPlayed")] public string WordOfDayPlayed { get; set; }
+        [JsonProperty("isWin")] public bool IsWin { get; set; }
     }
 }

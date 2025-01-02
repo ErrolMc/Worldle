@@ -1,10 +1,10 @@
 import { LoginResponse, LoginRequest } from "@renderer/types/AuthTypes";
-import { API_BASE_URL } from "@renderer/types/Constants";
+import { AUTH_API_URL } from "@renderer/types/Constants";
 
 export class AuthService {
-  static async login(username: string, password: string): Promise<string> {
+  static async login(username: string, password: string): Promise<LoginResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response: Response = await fetch(`${AUTH_API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -17,12 +17,12 @@ export class AuthService {
       });
 
       if (!response.ok) {
-        const error = await response.text();
+        const error: string = await response.text();
         throw new Error(error);
       }
 
-      const data: LoginResponse = await response.json();
-      return data.token;
+      const resp: LoginResponse = await response.json();
+      return resp;
     } catch (error) {
       throw error;
     }
@@ -31,7 +31,7 @@ export class AuthService {
   static async register(username: string, password: string): Promise<void> {
     try {
       console.log("Trying to register");
-      const response = await fetch(`${API_BASE_URL}/register`, {
+      const response: Response = await fetch(`${AUTH_API_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -43,10 +43,8 @@ export class AuthService {
         } as LoginRequest)
       });
 
-      console.log("Response: ", response);
-
       if (!response.ok) {
-        const error = await response.text();
+        const error: string = await response.text();
         throw new Error(error);
       }
     } catch (error) {

@@ -67,7 +67,7 @@ namespace WordleServer.Controllers
             // generate JWT token
             var token = GenerateJwtToken(user, request.AudienceURI);
 
-            return Ok(new { Token = token });
+            return Ok(new LoginResponse() { UserID = user.UserID, Token = token });
         }
         
         private string GenerateJwtToken(User user, string audience)

@@ -1,18 +1,25 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AUTH_ROUTE, GAME_INIT_ROUTE, PLAY_ROUTE, ALREADY_PLAYED_ROUTE, GAME_OVER_ROUTE } from "./types/RouteNames";
 
-import AuthPanel from './components/AuthPanel'
-import GamePanel from './components/GamePanel'
+import AuthPanel from "./components/AuthPanel";
+import GamePanel from "./components/GamePanel";
+import GameInitializer from "./components/GameInitializer";
+import AlreadyPlayed from "./components/AlreadyPlayed";
+import GameOver from "./components/GameOver";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AuthPanel />} />
-        <Route path="/game" element={<GamePanel />} />
+        <Route path={AUTH_ROUTE} element={<AuthPanel />} />
+        <Route path={GAME_INIT_ROUTE} element={<GameInitializer />} />
+        <Route path={PLAY_ROUTE} element={<GamePanel />} />
+        <Route path={ALREADY_PLAYED_ROUTE} element={<AlreadyPlayed />} />
+        <Route path={GAME_OVER_ROUTE} element={<GameOver />} />
       </Routes>
     </Router>
   );
 };
 
-export default App
+export default App;
