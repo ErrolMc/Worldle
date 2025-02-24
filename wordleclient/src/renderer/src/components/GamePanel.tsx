@@ -3,11 +3,10 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useGameLogic } from "../hooks/useGameLogic";
 import { CURRENT_WORD_KEY, GAME_RESULT_KEY } from "@renderer/types/LocalStorageKeys";
 import { GAME_INIT_ROUTE, GAME_OVER_ROUTE } from "@renderer/types/RouteNames";
-import { LocalGameResult } from "@renderer/types/GameTypes";
+import { GameResult } from "@renderer/types/GameTypes";
 
-import Board from "./Board";
-import Keyboard from "./Keyboard";
 import Popup from "./Popup";
+import WorldleBoard from "./WorldleBoard";
 
 import "../styles/GamePanel.css";
 
@@ -20,8 +19,6 @@ const GamePanel: React.FC = () => {
     navigate(GAME_INIT_ROUTE);
     return null;
   }
-
-  const gamePanelRef = useRef<HTMLDivElement>(null);
 
   const {
     gameState,
@@ -36,14 +33,17 @@ const GamePanel: React.FC = () => {
   // handle game completion
   useEffect(() => {
     if (gameOver) {
-      // store game result in localStorage for GameOver component
       localStorage.setItem(
         GAME_RESULT_KEY,
         JSON.stringify({
           isWin: isWin,
-          guesses: gameState.curAttempt,
-          wordOfDayPlayed: currentWord
-        } as LocalGameResult)
+          wotd: currentWord,
+          attempts: (
+            gameState.board.map((word) =>
+              word.letters.map((letter) => letter.character).join("")
+            ) as string[]
+          ).filter((attempt) => attempt.trim() !== "")
+        } as GameResult)
       );
 
       // Navigate to GameOver component
@@ -52,17 +52,15 @@ const GamePanel: React.FC = () => {
   }, [gameOver, isWin]);
 
   return (
-    <div
-      className="full-page"
-      ref={gamePanelRef} // attach the ref to the div
-      tabIndex={0} // make div focusable
-      onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
-      style={{ outline: "none" }} // Remove focus outline
-    >
+    <div className="full-page">
       <Popup message="Word not in dictionary" visible={wrongWordPopupVisible} />
-      <Board gameState={gameState} />
-      <Keyboard onKeyPress={handleKeyPress} keyboardLetterStates={gameState.keyboardLetterStates} />
+      <WorldleBoard
+        gameState={gameState}
+        isInteractive={true}
+        onKeyPress={handleKeyPress}
+        handleKeyDown={handleKeyDown}
+        handleKeyUp={handleKeyUp}
+      />
     </div>
   );
 };

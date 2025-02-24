@@ -19,7 +19,6 @@ namespace WordleServer.Controllers
         public async Task<IActionResult> GetWordOfTheDay()
         {
             string wotd = WordList.GetWordOfTheDay();
-            Console.WriteLine($"Getting wotd: {wotd}");
             return Ok(await Task.FromResult(wotd));
         }
         
@@ -28,7 +27,7 @@ namespace WordleServer.Controllers
         {
             try
             {
-                if (request.WordOfDayPlayed != WordList.GetWordOfTheDay())
+                if (request.Wotd != WordList.GetWordOfTheDay())
                 {
                     return BadRequest("Invalid Word of the Day reported");
                 }
@@ -45,8 +44,8 @@ namespace WordleServer.Controllers
                     ID = Guid.NewGuid().ToString(),
                     UserID = request.UserID,
                     DatePlayed = DateTime.UtcNow.Date,
-                    WordOfTheDay = request.WordOfDayPlayed,
-                    Guesses = request.Guesses,
+                    WordOfTheDay = request.Wotd,
+                    Attempts = request.Attempts,
                     IsWin = request.IsWin
                 });
 
@@ -64,9 +63,9 @@ namespace WordleServer.Controllers
         {
             try
             {
-                bool hasPlayed = await _gameRepository.HasUserPlayedToday(userID);
+                GameResult gameResult = await _gameRepository.GetTodaysGameResult(userID);
 
-                return Ok(new HasUserPlayedResponse { HasPlayed = hasPlayed });
+                return Ok(new HasUserPlayedResponse { HasPlayed = gameResult != null, GameResult = GameResultSmall.FromGameResult(gameResult)});
             }
             catch (Exception ex)
             {

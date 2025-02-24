@@ -16,19 +16,8 @@ export interface GameState {
   keyboardLetterStates: Record<string, LetterState>;
 }
 
-export interface GameResultRequest {
-  userID: string;
-  guesses: number;
-  wordOfDayPlayed: string;
+export interface GameResult {
+  wotd: string;
+  attempts: string[];
   isWin: boolean;
-}
-
-export interface HasUserPlayedResponse {
-  hasPlayed: boolean;
-}
-
-export interface LocalGameResult {
-  isWin: boolean;
-  guesses: number;
-  wordOfDayPlayed: string;
 }

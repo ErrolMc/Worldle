@@ -6,5 +6,6 @@ namespace WordleServer.DB
     {
         Task<bool> HasUserPlayedToday(string userID);
         Task SaveGameResult(GameResult result);
+        Task<GameResult> GetTodaysGameResult(string userID);
     }
 }

@@ -1,4 +1,4 @@
-import { GameResultRequest, HasUserPlayedResponse } from "@renderer/types/GameTypes";
+import { GameResultRequest, HasUserPlayedResponse } from "@renderer/types/ApiTypes";
 import { GAME_API_URL } from "@renderer/types/Constants";
 
 export class GameService {
@@ -36,7 +36,7 @@ export class GameService {
     }
   }
 
-  static async hasUserPlayedToday(userID: string): Promise<boolean> {
+  static async hasUserPlayedToday(userID: string): Promise<HasUserPlayedResponse> {
     try {
       const response = await fetch(`${GAME_API_URL}/has-played?userID=${userID}`);
 
@@ -45,7 +45,7 @@ export class GameService {
       }
 
       const data: HasUserPlayedResponse = await response.json();
-      return data.hasPlayed;
+      return data;
     } catch (error) {
       throw error;
     }

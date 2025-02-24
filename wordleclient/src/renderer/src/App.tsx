@@ -5,8 +5,7 @@ import { AUTH_ROUTE, GAME_INIT_ROUTE, PLAY_ROUTE, ALREADY_PLAYED_ROUTE, GAME_OVE
 import AuthPanel from "./components/AuthPanel";
 import GamePanel from "./components/GamePanel";
 import GameInitializer from "./components/GameInitializer";
-import AlreadyPlayed from "./components/AlreadyPlayed";
-import GameOver from "./components/GameOver";
+import GameResultPanel from "./components/GameResult";
 
 const App: React.FC = () => {
   return (
@@ -15,8 +14,8 @@ const App: React.FC = () => {
         <Route path={AUTH_ROUTE} element={<AuthPanel />} />
         <Route path={GAME_INIT_ROUTE} element={<GameInitializer />} />
         <Route path={PLAY_ROUTE} element={<GamePanel />} />
-        <Route path={ALREADY_PLAYED_ROUTE} element={<AlreadyPlayed />} />
-        <Route path={GAME_OVER_ROUTE} element={<GameOver />} />
+        <Route path={ALREADY_PLAYED_ROUTE} element={<GameResultPanel shouldReport={false} />} />
+        <Route path={GAME_OVER_ROUTE} element={<GameResultPanel shouldReport={true} />} />
       </Routes>
     </Router>
   );
