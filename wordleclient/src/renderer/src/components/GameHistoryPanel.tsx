@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { GameService } from "../services/GameService";
 import { USER_ID_KEY } from "@renderer/types/LocalStorageKeys";
 import { GameHistoryResponse } from "@renderer/types/ApiTypes";
-import { GameResult, GameState, LetterState } from "@renderer/types/GameTypes";
+import { GameResult } from "@renderer/types/GameTypes";
+import { createDisplayGameState } from "@renderer/utils/GameStateCalculator";
 import WorldleBoard from "./WorldleBoard";
 import "../styles/GameHistoryPanel.css";
 
@@ -18,7 +19,6 @@ const GameHistoryPanel: React.FC = () => {
       try {
         if (!userID) return;
         const response: GameHistoryResponse = await GameService.getGameHistory(userID);
-        console.log(response.gameResults);
         setGames(response.gameResults);
       } catch (error) {
         console.error("Failed to fetch game history:", error);
@@ -27,30 +27,6 @@ const GameHistoryPanel: React.FC = () => {
 
     fetchGameHistory();
   }, [userID]);
-
-  const calculateLetterState = (char: string, index: number, word: string): LetterState => {
-    if (!word || !char) return "empty";
-    if (word[index]?.toLowerCase() === char.toLowerCase()) return "correct";
-    if (word.toLowerCase().includes(char.toLowerCase())) return "present";
-    return "absent";
-  };
-
-  const createGameState = (attempts: string[], word: string): GameState => ({
-    currentWord: word,
-    board: [
-      ...attempts.map((attempt) => ({
-        letters: attempt.split("").map((char, index) => ({
-          character: char,
-          state: calculateLetterState(char, index, word)
-        }))
-      })),
-      ...Array(6 - attempts.length).fill({
-        letters: Array(5).fill({ character: "", state: "empty" as LetterState })
-      })
-    ],
-    curAttempt: attempts.length,
-    keyboardLetterStates: {}
-  });
 
   return (
     <div className="full-page">
@@ -85,7 +61,7 @@ const GameHistoryPanel: React.FC = () => {
                 <div className="game-details">
                   <p>Word: {game.wotd}</p>
                   <WorldleBoard
-                    gameState={createGameState(game.attempts, game.wotd)}
+                    gameState={createDisplayGameState(game.attempts, game.wotd)}
                     isInteractive={false}
                   />
                 </div>

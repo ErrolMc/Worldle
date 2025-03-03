@@ -2,10 +2,9 @@ import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { GameService } from "../services/GameService";
 import { USER_ID_KEY, GAME_RESULT_KEY } from "@renderer/types/LocalStorageKeys";
-import { GameResult, LetterState } from "@renderer/types/GameTypes";
+import { GameResult } from "@renderer/types/GameTypes";
 import { GameResultRequest } from "@renderer/types/ApiTypes";
-import { GameState } from "@renderer/types/GameTypes";
-import { MAX_ATTEMPTS } from "@renderer/types/Constants";
+import { createDisplayGameState } from "@renderer/utils/GameStateCalculator";
 import { GAME_HISTORY_ROUTE } from "@renderer/types/RouteNames";
 import WorldleBoard from "./WorldleBoard";
 
@@ -49,35 +48,8 @@ const GameResultPanel: React.FC<{ shouldReport?: boolean }> = ({ shouldReport = 
     return null;
   }
 
-  const gameResult: GameResult = JSON.parse(gameResultString);
-
-  // Calculate letter states for the completed game
-  const calculateLetterState = (char: string, index: number, word: string): LetterState => {
-    if (!word || !char) return "empty";
-    if (word[index].toLowerCase() === char.toLowerCase()) return "correct";
-    if (word.toLowerCase().includes(char.toLowerCase())) return "present";
-    return "absent";
-  };
-
   // Create a GameState object for the WordleBoard component
-  const boardState: GameState = {
-    currentWord: gameResult.wotd,
-    board: [
-      // First add the actual attempts
-      ...gameResult.attempts.map((attempt) => ({
-        letters: attempt.split("").map((char, index) => ({
-          character: char,
-          state: calculateLetterState(char, index, gameResult.wotd)
-        }))
-      })),
-      // Then pad with empty rows up to MAX_ATTEMPTS
-      ...Array(MAX_ATTEMPTS - gameResult.attempts.length).fill({
-        letters: Array(5).fill({ character: "", state: "empty" })
-      })
-    ],
-    curAttempt: gameResult.attempts.length,
-    keyboardLetterStates: {}
-  };
+  const gameResult: GameResult = JSON.parse(gameResultString);
 
   return (
     <div className="full-page">
@@ -87,7 +59,10 @@ const GameResultPanel: React.FC<{ shouldReport?: boolean }> = ({ shouldReport = 
           : "Better luck next time!"}
       </h2>
       <p>The word was: {gameResult.wotd}</p>
-      <WorldleBoard gameState={boardState} isInteractive={false} />
+      <WorldleBoard
+        gameState={createDisplayGameState(gameResult.attempts, gameResult.wotd)}
+        isInteractive={false}
+      />
       <div className="button-container">
         <button onClick={() => navigate("/")}>Return to Login</button>
         <button onClick={() => navigate(GAME_HISTORY_ROUTE)}>View Game History</button>
