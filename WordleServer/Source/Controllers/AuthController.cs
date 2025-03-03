@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using WordleServer.Logging;
 
 namespace WordleServer.Controllers
 {
@@ -13,10 +14,12 @@ namespace WordleServer.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly ILoggerService _logger;
         
-        public AuthController(IUserRepository userRepository)
+        public AuthController(IUserRepository userRepository, ILoggerService logger)
         {
             _userRepository = userRepository;
+            _logger = logger;
         }
         
         [HttpPost("register")]
@@ -46,6 +49,7 @@ namespace WordleServer.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Unable to create user. Please try again later.");
             }
             
+            _logger.Log($"User {user.Username} registered");
             return Ok("User created");
         }
 
@@ -67,6 +71,7 @@ namespace WordleServer.Controllers
             // generate JWT token
             var token = GenerateJwtToken(user, request.AudienceURI);
 
+            _logger.Log($"User {user.Username} logged in");
             return Ok(new LoginResponse() { UserID = user.UserID, Token = token });
         }
         

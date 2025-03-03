@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using WordleServer.Data;
 using WordleServer.DB;
+using WordleServer.Logging;
+using LogLevel = WordleServer.Logging.LogLevel;
 
 namespace WordleServer.Controllers
 {
@@ -8,10 +10,12 @@ namespace WordleServer.Controllers
     [Route("api/game")]
     public class GameController : ControllerBase
     {
+        private readonly ILoggerService _logger;
         private readonly IGameRepository _gameRepository;
         
-        public GameController(IGameRepository gameRepository)
+        public GameController(IGameRepository gameRepository, ILoggerService logger)
         {
+            _logger = logger;
             _gameRepository = gameRepository;
         }
         
@@ -49,11 +53,12 @@ namespace WordleServer.Controllers
                     IsWin = request.IsWin
                 });
 
+                _logger.Log($"Reported {request.Wotd} for {request.UserID}, success: {request.IsWin}");
                 return Ok("Result reported");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reporting result: {ex.Message}");
+                _logger.Log($"Error reporting result: {ex.Message}", LogLevel.Error);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while reporting the result");
             }
         }
@@ -69,8 +74,24 @@ namespace WordleServer.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error checking if user played today: {ex.Message}");
+                _logger.Log($"Error checking if user played today: {ex.Message}", LogLevel.Error);
                 return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while checking if the user played");
+            }
+        }
+        
+        [HttpGet("game-history")]
+        public async Task<IActionResult> GameHistory([FromQuery] string userID)
+        {
+            try
+            {
+                List<GameResult> gameResults = await _gameRepository.GetUserGameHistory(userID);
+
+                return Ok(new GetGameHistoryResponse() { GameResults = gameResults });
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"Error getting game history: {ex.Message}", LogLevel.Error);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while getting game history");
             }
         }
     }

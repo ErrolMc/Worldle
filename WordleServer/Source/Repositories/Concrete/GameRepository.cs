@@ -36,5 +36,23 @@ namespace WordleServer.DB
             
             return null;
         }
+
+        public async Task<List<GameResult>> GetUserGameHistory(string userID)
+        {
+            IQueryable<GameResult> query = _container.GetItemLinqQueryable<GameResult>()
+                .Where(r => r.UserID == userID)
+                .OrderByDescending(r => r.DatePlayed);  // most recent games first
+    
+            FeedIterator<GameResult> iterator = query.ToFeedIterator();
+            var results = new List<GameResult>();
+    
+            while (iterator.HasMoreResults)
+            {
+                FeedResponse<GameResult> response = await iterator.ReadNextAsync();
+                results.AddRange(response);
+            }
+    
+            return results;
+        }
     }
 }

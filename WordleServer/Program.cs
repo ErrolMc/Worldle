@@ -4,6 +4,8 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.IdentityModel.Tokens;
 using WordleServer.Data;
 using WordleServer.DB;
+using WordleServer.Logging;
+using LogLevel = WordleServer.Logging.LogLevel;
 
 namespace WordleServer
 {
@@ -22,6 +24,7 @@ namespace WordleServer
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
+            services.AddSingleton<ILoggerService>(new ConsoleLogger(LogLevel.Log));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IGameRepository, GameRepository>();
 

@@ -1,6 +1,8 @@
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 using WordleServer.Data;
+using WordleServer.Logging;
+using LogLevel = WordleServer.Logging.LogLevel;
 using User = WordleServer.Data.User;
 
 namespace WordleServer.DB
@@ -8,9 +10,11 @@ namespace WordleServer.DB
     public class UserRepository : IUserRepository
     {
         private readonly Container _container;
+        private readonly ILoggerService _logger;
 
-        public UserRepository(Database database)
+        public UserRepository(Database database, ILoggerService logger)
         {
+            _logger = logger;
             _container = database.GetContainer(Constants.USERS_CONTAINER_NAME);
         }
 
@@ -23,7 +27,7 @@ namespace WordleServer.DB
             }
             catch (Exception e)
             {
-                Console.WriteLine($"GetUserByIdAsync Exception : {e.Message}");
+                _logger.Log($"GetUserByIdAsync Exception : {e.Message}", LogLevel.Error);
                 return null;
             }
         }
@@ -42,7 +46,7 @@ namespace WordleServer.DB
             }
             catch (Exception e)
             {
-                Console.WriteLine($"GetUserByUsernameAsync Exception : {e.Message}");
+                _logger.Log($"GetUserByUsernameAsync Exception : {e.Message}", LogLevel.Error);
                 return null;
             }
         }
@@ -56,7 +60,7 @@ namespace WordleServer.DB
             }
             catch (Exception e)
             {
-                Console.WriteLine($"CreateUserAsync Exception : {e.Message}");
+                _logger.Log($"CreateUserAsync Exception : {e.Message}", LogLevel.Error);
                 return false;
             }
         }
