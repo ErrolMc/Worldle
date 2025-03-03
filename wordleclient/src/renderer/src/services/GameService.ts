@@ -1,4 +1,8 @@
-import { GameResultRequest, HasUserPlayedResponse } from "@renderer/types/ApiTypes";
+import {
+  GameResultRequest,
+  HasUserPlayedResponse,
+  GameHistoryResponse
+} from "@renderer/types/ApiTypes";
 import { GAME_API_URL } from "@renderer/types/Constants";
 
 export class GameService {
@@ -45,6 +49,21 @@ export class GameService {
       }
 
       const data: HasUserPlayedResponse = await response.json();
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  static async getGameHistory(userID: string): Promise<GameHistoryResponse> {
+    try {
+      const response = await fetch(`${GAME_API_URL}/game-history?userID=${userID}`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch game history");
+      }
+
+      const data: GameHistoryResponse = await response.json();
       return data;
     } catch (error) {
       throw error;

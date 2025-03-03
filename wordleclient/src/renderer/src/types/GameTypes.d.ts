@@ -20,4 +20,5 @@ export interface GameResult {
   wotd: string;
   attempts: string[];
   isWin: boolean;
+  datePlayed: string;
 }

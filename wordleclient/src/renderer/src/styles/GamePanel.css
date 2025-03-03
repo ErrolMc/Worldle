@@ -20,3 +20,10 @@
 .full-page p {
   color: #888888;
 }
+
+.button-container {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 20px 0;
+}

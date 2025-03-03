@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useGameLogic } from "../hooks/useGameLogic";
 import { CURRENT_WORD_KEY, GAME_RESULT_KEY } from "@renderer/types/LocalStorageKeys";

@@ -11,3 +11,7 @@ export interface GameResultRequest {
   wotd: string;
   isWin: boolean;
 }
+
+export interface GameHistoryResponse {
+  gameResults: GameResult[];
+}

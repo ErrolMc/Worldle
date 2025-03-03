@@ -5,11 +5,11 @@ import { USER_ID_KEY, GAME_RESULT_KEY } from "@renderer/types/LocalStorageKeys";
 import { GameResult, LetterState } from "@renderer/types/GameTypes";
 import { GameResultRequest } from "@renderer/types/ApiTypes";
 import { GameState } from "@renderer/types/GameTypes";
-
+import { MAX_ATTEMPTS } from "@renderer/types/Constants";
+import { GAME_HISTORY_ROUTE } from "@renderer/types/RouteNames";
 import WorldleBoard from "./WorldleBoard";
 
 import "../styles/GamePanel.css";
-import { MAX_ATTEMPTS } from "@renderer/types/Constants";
 
 const GameResultPanel: React.FC<{ shouldReport?: boolean }> = ({ shouldReport = false }) => {
   const navigate = useNavigate();
@@ -53,6 +53,7 @@ const GameResultPanel: React.FC<{ shouldReport?: boolean }> = ({ shouldReport = 
 
   // Calculate letter states for the completed game
   const calculateLetterState = (char: string, index: number, word: string): LetterState => {
+    if (!word || !char) return "empty";
     if (word[index].toLowerCase() === char.toLowerCase()) return "correct";
     if (word.toLowerCase().includes(char.toLowerCase())) return "present";
     return "absent";
@@ -78,7 +79,6 @@ const GameResultPanel: React.FC<{ shouldReport?: boolean }> = ({ shouldReport = 
     keyboardLetterStates: {}
   };
 
-  console.log(boardState.board);
   return (
     <div className="full-page">
       <h2>
@@ -88,8 +88,11 @@ const GameResultPanel: React.FC<{ shouldReport?: boolean }> = ({ shouldReport = 
       </h2>
       <p>The word was: {gameResult.wotd}</p>
       <WorldleBoard gameState={boardState} isInteractive={false} />
+      <div className="button-container">
+        <button onClick={() => navigate("/")}>Return to Login</button>
+        <button onClick={() => navigate(GAME_HISTORY_ROUTE)}>View Game History</button>
+      </div>
       <p>Come back tomorrow for a new word!</p>
-      <button onClick={() => navigate("/")}>Return to Login</button>
     </div>
   );
 };

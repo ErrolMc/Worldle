@@ -48,7 +48,7 @@ namespace WordleServer.Controllers
                     ID = Guid.NewGuid().ToString(),
                     UserID = request.UserID,
                     DatePlayed = DateTime.UtcNow.Date,
-                    WordOfTheDay = request.Wotd,
+                    Wotd = request.Wotd,
                     Attempts = request.Attempts,
                     IsWin = request.IsWin
                 });

@@ -7,6 +7,7 @@ namespace WordleServer.Data
         [JsonProperty("wotd")] public string Wotd { get; set; }
         [JsonProperty("attempts")] public List<string> Attempts { get; set; }
         [JsonProperty("isWin")] public bool IsWin { get; set; }
+        [JsonProperty("datePlayed")] public DateTime DatePlayed { get; set; }
 
         public static GameResultSmall FromGameResult(GameResult gameResult)
         {
@@ -15,9 +16,10 @@ namespace WordleServer.Data
 
             return new GameResultSmall()
             {
-                Wotd = gameResult.WordOfTheDay,
+                Wotd = gameResult.Wotd,
                 Attempts = gameResult.Attempts,
-                IsWin = gameResult.IsWin
+                IsWin = gameResult.IsWin,
+                DatePlayed = gameResult.DatePlayed
             };
         }
     }
