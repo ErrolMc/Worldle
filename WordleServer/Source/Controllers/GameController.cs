@@ -3,11 +3,13 @@ using WordleServer.Data;
 using WordleServer.DB;
 using WordleServer.Logging;
 using LogLevel = WordleServer.Logging.LogLevel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WordleServer.Controllers
 {
     [ApiController]
     [Route("api/game")]
+    [Authorize]
     public class GameController : ControllerBase
     {
         private readonly ILoggerService _logger;

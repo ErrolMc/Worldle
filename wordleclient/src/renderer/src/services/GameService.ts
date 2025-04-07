@@ -4,11 +4,22 @@ import {
   GameHistoryResponse
 } from "@renderer/types/ApiTypes";
 import { GAME_API_URL } from "@renderer/types/Constants";
+import { LOGIN_TOKEN_KEY } from "@renderer/types/LocalStorageKeys";
 
 export class GameService {
+  private static getAuthHeaders(): HeadersInit {
+    const token = localStorage.getItem(LOGIN_TOKEN_KEY);
+    return {
+      "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : ""
+    };
+  }
+
   static async getWordOfTheDay(): Promise<string> {
     try {
-      const response = await fetch(`${GAME_API_URL}/wotd`);
+      const response = await fetch(`${GAME_API_URL}/wotd`, {
+        headers: this.getAuthHeaders()
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch word of the day");
@@ -25,9 +36,7 @@ export class GameService {
     try {
       const response = await fetch(`${GAME_API_URL}/report`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(result)
       });
 
@@ -42,7 +51,9 @@ export class GameService {
 
   static async hasUserPlayedToday(userID: string): Promise<HasUserPlayedResponse> {
     try {
-      const response = await fetch(`${GAME_API_URL}/has-played?userID=${userID}`);
+      const response = await fetch(`${GAME_API_URL}/has-played?userID=${userID}`, {
+        headers: this.getAuthHeaders()
+      });
 
       if (!response.ok) {
         throw new Error("Failed to check if user has played");
@@ -57,7 +68,9 @@ export class GameService {
 
   static async getGameHistory(userID: string): Promise<GameHistoryResponse> {
     try {
-      const response = await fetch(`${GAME_API_URL}/game-history?userID=${userID}`);
+      const response = await fetch(`${GAME_API_URL}/game-history?userID=${userID}`, {
+        headers: this.getAuthHeaders()
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch game history");
