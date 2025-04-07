@@ -1,11 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using WordleServer.Data;
 using WordleServer.DB;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using WordleServer.Auth;
 using WordleServer.Logging;
+using LoginRequest = WordleServer.Data.LoginRequest;
+using LogLevel = WordleServer.Logging.LogLevel;
 
 namespace WordleServer.Controllers
 {
@@ -13,11 +14,16 @@ namespace WordleServer.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthService _authService;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILoggerService _logger;
         
-        public AuthController(IUserRepository userRepository, ILoggerService logger)
+        public AuthController(IAuthService authService, IRefreshTokenRepository refreshTokenRepository,
+            IUserRepository userRepository, ILoggerService logger)
         {
+            _authService = authService;
+            _refreshTokenRepository = refreshTokenRepository;
             _userRepository = userRepository;
             _logger = logger;
         }
@@ -41,7 +47,7 @@ namespace WordleServer.Controllers
                 ID = userID,
                 UserID = userID,
                 Username = request.Username,
-                PasswordHash = HashPassword(request.Password),
+                PasswordHash = _authService.HashPassword(request.Password),
             };
             
             if (!await _userRepository.CreateUserAsync(user))
@@ -63,51 +69,52 @@ namespace WordleServer.Controllers
             
             var user = await _userRepository.GetUserByUsernameAsync(request.Username);
 
-            if (user == null || !VerifyPasswordHash(request.Password, user.PasswordHash))
+            if (user == null || !_authService.ValidatePassword(request.Password, user.PasswordHash))
             {
                 return Unauthorized("Invalid username or password");
             }
 
             // generate JWT token
-            var token = GenerateJwtToken(user, request.AudienceURI);
+            var token = _authService.GenerateJwtToken(user, request.AudienceURI);
+            
+            // generate refresh token
+            var refreshToken = await _refreshTokenRepository.CreateRefreshToken(user.UserID, request.AudienceURI);
 
             _logger.Log($"User {user.Username} logged in");
-            return Ok(new LoginResponse() { UserID = user.UserID, Token = token });
+            return Ok(new LoginResponse() { UserID = user.UserID, Token = token, RefreshToken = refreshToken });
         }
-        
-        private string GenerateJwtToken(User user, string audience)
-        {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Constants.JWT_SIGNING_KEY));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            // define token claims
-            var claims = new[]
+        [HttpPost("refresh")]
+        [Authorize]
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+        {
+            try
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.ID),
-                new Claim(JwtRegisteredClaimNames.Name, user.Username),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
+                (RefreshTokenData tokenData, RefreshTokenValidateState state) =
+                    await _refreshTokenRepository.ValidateRefreshToken(request.RefreshToken);
 
-            // create the token
-            var token = new JwtSecurityToken(
-                issuer: Constants.API_URI,
-                audience: audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(24), // Token expiration
-                signingCredentials: credentials
-            );
+                if (state != RefreshTokenValidateState.Success)
+                {
+                    return BadRequest("Couldn't refresh token");
+                }
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-        
-        private static bool VerifyPasswordHash(string password, string storedHash)
-        {
-            return BCrypt.Net.BCrypt.Verify(password, storedHash);
-        }
-        
-        private static string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
+                User user = await _userRepository.GetUserByIdAsync(tokenData.UserID);
+                if (user == null)
+                {
+                    await _refreshTokenRepository.RemoveRefreshToken(request.RefreshToken);
+                    return Unauthorized("User not found");
+                }
+
+                string newTokenRefreshToken = await _refreshTokenRepository.RotateRefreshToken(tokenData);
+                string newJwtToken = _authService.GenerateJwtToken(user, tokenData.Audience);
+
+                return Ok(new LoginResponse() { UserID = user.UserID, Token = newJwtToken, RefreshToken = newTokenRefreshToken });
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"Error when refreshing token: {ex.Message}", LogLevel.Error);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while refreshing token");
+            }
         }
     }
 }

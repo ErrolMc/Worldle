@@ -1,4 +1,4 @@
-namespace WordleServer.Logging
+namespace WordleServer.Logging.Concrete
 {
     public class ConsoleLogger : ILoggerService
     {

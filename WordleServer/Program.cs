@@ -2,9 +2,12 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Azure.Cosmos;
 using Microsoft.IdentityModel.Tokens;
+using WordleServer.Auth;
+using WordleServer.Auth.Concrete;
 using WordleServer.Data;
 using WordleServer.DB;
 using WordleServer.Logging;
+using WordleServer.Logging.Concrete;
 using LogLevel = WordleServer.Logging.LogLevel;
 
 namespace WordleServer
@@ -19,14 +22,20 @@ namespace WordleServer
             // Add services to the container.
             services.AddControllers();
             services.AddAuthorization();
+            services.AddDataProtection();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            services.AddSingleton<ILoggerService>(new ConsoleLogger(LogLevel.Log));
+            // repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IGameRepository, GameRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            
+            // services
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddSingleton<ILoggerService>(new ConsoleLogger(LogLevel.Log));
 
             services.AddSingleton<Database>((s) =>
             {
