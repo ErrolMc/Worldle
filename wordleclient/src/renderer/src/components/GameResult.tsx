@@ -5,7 +5,7 @@ import { USER_ID_KEY, GAME_RESULT_KEY } from "@renderer/types/LocalStorageKeys";
 import { GameResult } from "@renderer/types/GameTypes";
 import { GameResultRequest } from "@renderer/types/ApiTypes";
 import { createDisplayGameState } from "@renderer/utils/GameStateCalculator";
-import { GAME_HISTORY_ROUTE } from "@renderer/types/RouteNames";
+import { GAME_HISTORY_ROUTE, AUTH_ROUTE } from "@renderer/types/RouteNames";
 import WorldleBoard from "./WorldleBoard";
 
 import "../styles/GamePanel.css";
@@ -18,7 +18,7 @@ const GameResultPanel: React.FC<{ shouldReport?: boolean }> = ({ shouldReport = 
 
   useEffect(() => {
     if (!userID || !gameResultString) {
-      navigate("/");
+      navigate(AUTH_ROUTE);
       return;
     }
 
@@ -36,6 +36,7 @@ const GameResultPanel: React.FC<{ shouldReport?: boolean }> = ({ shouldReport = 
           } as GameResultRequest);
         } catch (err) {
           console.error("Failed to report game result:", err);
+          navigate(AUTH_ROUTE);
         }
       };
 

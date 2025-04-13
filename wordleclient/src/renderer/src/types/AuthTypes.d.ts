@@ -7,4 +7,5 @@ export interface LoginRequest {
 export interface LoginResponse {
   userID: string;
   token: string;
+  refreshToken: string;
 }

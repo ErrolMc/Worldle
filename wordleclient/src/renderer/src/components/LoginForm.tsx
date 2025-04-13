@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthService } from "../services/AuthService";
 import { LoginResponse } from "@renderer/types/AuthTypes";
-import { LOGIN_TOKEN_KEY, USER_ID_KEY } from "@renderer/types/LocalStorageKeys";
+import { LOGIN_TOKEN_KEY, USER_ID_KEY, REFRESH_TOKEN_KEY } from "@renderer/types/LocalStorageKeys";
 import { GAME_INIT_ROUTE } from "@renderer/types/RouteNames";
 
 import "../styles/LoginRegisterForm.css";
@@ -24,6 +24,7 @@ const LoginForm: React.FC<{ setIsLogin: React.Dispatch<React.SetStateAction<bool
     try {
       const resp: LoginResponse = await AuthService.login(username, password);
       localStorage.setItem(LOGIN_TOKEN_KEY, resp.token);
+      localStorage.setItem(REFRESH_TOKEN_KEY, resp.refreshToken);
       localStorage.setItem(USER_ID_KEY, resp.userID);
 
       navigate(GAME_INIT_ROUTE);

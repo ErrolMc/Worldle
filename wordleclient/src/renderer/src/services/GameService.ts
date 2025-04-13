@@ -4,28 +4,18 @@ import {
   GameHistoryResponse
 } from "@renderer/types/ApiTypes";
 import { GAME_API_URL } from "@renderer/types/Constants";
-import { LOGIN_TOKEN_KEY } from "@renderer/types/LocalStorageKeys";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 export class GameService {
-  private static getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem(LOGIN_TOKEN_KEY);
-    return {
-      "Content-Type": "application/json",
-      Authorization: token ? `Bearer ${token}` : ""
-    };
-  }
-
   static async getWordOfTheDay(): Promise<string> {
     try {
-      const response = await fetch(`${GAME_API_URL}/wotd`, {
-        headers: this.getAuthHeaders()
-      });
+      const response: Response = await fetchWithAuth(`${GAME_API_URL}/wotd`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch word of the day");
       }
 
-      const word = await response.text();
+      const word: string = await response.text();
       return word;
     } catch (error) {
       throw error;
@@ -34,14 +24,16 @@ export class GameService {
 
   static async reportGameResult(result: GameResultRequest): Promise<void> {
     try {
-      const response = await fetch(`${GAME_API_URL}/report`, {
+      const response: Response = await fetchWithAuth(`${GAME_API_URL}/report`, {
         method: "POST",
-        headers: this.getAuthHeaders(),
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(result)
       });
 
       if (!response.ok) {
-        const error = await response.text();
+        const error: string = await response.text();
         throw new Error(error);
       }
     } catch (error) {
@@ -51,9 +43,7 @@ export class GameService {
 
   static async hasUserPlayedToday(userID: string): Promise<HasUserPlayedResponse> {
     try {
-      const response = await fetch(`${GAME_API_URL}/has-played?userID=${userID}`, {
-        headers: this.getAuthHeaders()
-      });
+      const response: Response = await fetchWithAuth(`${GAME_API_URL}/has-played?userID=${userID}`);
 
       if (!response.ok) {
         throw new Error("Failed to check if user has played");
@@ -68,9 +58,9 @@ export class GameService {
 
   static async getGameHistory(userID: string): Promise<GameHistoryResponse> {
     try {
-      const response = await fetch(`${GAME_API_URL}/game-history?userID=${userID}`, {
-        headers: this.getAuthHeaders()
-      });
+      const response: Response = await fetchWithAuth(
+        `${GAME_API_URL}/game-history?userID=${userID}`
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch game history");

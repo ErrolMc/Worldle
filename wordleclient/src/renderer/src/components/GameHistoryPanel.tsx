@@ -7,6 +7,7 @@ import { GameResult } from "@renderer/types/GameTypes";
 import { createDisplayGameState } from "@renderer/utils/GameStateCalculator";
 import WorldleBoard from "./WorldleBoard";
 import "../styles/GameHistoryPanel.css";
+import { AUTH_ROUTE } from "@renderer/types/RouteNames";
 
 const GameHistoryPanel: React.FC = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const GameHistoryPanel: React.FC = () => {
         setGames(response.gameResults);
       } catch (error) {
         console.error("Failed to fetch game history:", error);
+        navigate(AUTH_ROUTE);
       }
     };
 
