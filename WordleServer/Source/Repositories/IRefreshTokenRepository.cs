@@ -1,4 +1,3 @@
-
 using WordleServer.Data;
 
 namespace WordleServer.DB
@@ -9,5 +8,6 @@ namespace WordleServer.DB
         public Task<bool> RemoveRefreshToken(string token);
         public Task<string> CreateRefreshToken(string userID, string audience);
         public Task<string> RotateRefreshToken(RefreshTokenData data);
+        public Task<int> RemoveExpiredTokens();
     }
 }

@@ -71,6 +71,30 @@ namespace WordleServer.DB
             return data.Token;
         }
 
+        public async Task<int> RemoveExpiredTokens()
+        {
+            IQueryable<RefreshTokenData> query = _container.GetItemLinqQueryable<RefreshTokenData>()
+                .Where(r => r.Expiry <= DateTime.UtcNow);
+            
+            FeedIterator<RefreshTokenData> iterator = query.ToFeedIterator();
+            int deletedCount = 0;
+            
+            while (iterator.HasMoreResults)
+            {
+                FeedResponse<RefreshTokenData> response = await iterator.ReadNextAsync();
+                foreach (RefreshTokenData token in response)
+                {
+                    await _container.DeleteItemAsync<RefreshTokenData>(
+                        token.ID, 
+                        new PartitionKey(token.ID)
+                    );
+                    deletedCount++;
+                }
+            }
+            
+            return deletedCount;
+        }
+
         private string GenerateTokenString(string userID)
         {
             IDataProtector protector = _dataProtectionProvider.CreateProtector("RefreshToken");

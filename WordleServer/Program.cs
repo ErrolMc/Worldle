@@ -8,6 +8,7 @@ using WordleServer.Data;
 using WordleServer.DB;
 using WordleServer.Logging;
 using WordleServer.Logging.Concrete;
+using WordleServer.Services;
 using LogLevel = WordleServer.Logging.LogLevel;
 
 namespace WordleServer
@@ -36,6 +37,7 @@ namespace WordleServer
             // services
             services.AddScoped<IAuthService, AuthService>();
             services.AddSingleton<ILoggerService>(new ConsoleLogger(LogLevel.Log));
+            services.AddHostedService<TokenCleanupService>();
 
             services.AddSingleton<Database>((s) =>
             {
