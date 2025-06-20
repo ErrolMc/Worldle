@@ -8,9 +8,10 @@ namespace WordleServer.DB
     {
         private readonly Container _container;
 
-        public GameRepository(Database database)
+        public GameRepository(CosmosClient cosmosClient)
         {
-            _container = database.GetContainer(Constants.GAMES_CONTAINER_NAME);
+            _container = cosmosClient.GetDatabase(Constants.COSMOS_DATABASE_NAME)
+                .GetContainer(Constants.GAMES_CONTAINER_NAME);
         }
 
         public async Task<bool> HasUserPlayedToday(string userID)

@@ -18,6 +18,7 @@ namespace WordleServer
         public static void Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            builder.AddServiceDefaults();
             IServiceCollection services = builder.Services;
 
             // Add services to the container.
@@ -39,11 +40,10 @@ namespace WordleServer
             services.AddSingleton<ILoggerService>(new ConsoleLogger(LogLevel.Log));
             services.AddHostedService<TokenCleanupService>();
 
-            services.AddSingleton<Database>((s) =>
-            {
-                var cosmosClient = new CosmosClient(Constants.COSMOS_CONNECTION_STRING);
-                return cosmosClient.GetDatabase(Constants.COSMOS_DATABASE_NAME);
-            });
+            // Cosmos DB registration from the Aspire client package
+            // It registers CosmosClient as a singleton service
+            // And also wires up Telemetry for Cosmos DB, which you can see in Aspire Dashboard (Traces)
+            builder.AddAzureCosmosClient(Constants.COSMOS_DATABASE_NAME);
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -71,6 +71,8 @@ namespace WordleServer
             });
             
             WebApplication app = builder.Build();
+            
+            app.MapDefaultEndpoints();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

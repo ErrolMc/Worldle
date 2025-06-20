@@ -8,13 +8,12 @@ namespace WordleServer.Data
         public const string REFRESH_TOKENS_CONTAINER_NAME = "refreshtokens";
         public const string ELECTRON_APP_AUDIENCE = "WordleElectronApp";
         public const string ELECTRON_APP_URI = "http://localhost:5173";
-        
+        public const string WEB_APP_URI = "https://localhost:7080";
+
         // environment variables (stuff that can be changed or is secret)
-        public static string COSMOS_CONNECTION_STRING => Environment.GetEnvironmentVariable("COSMOS_CONNECTION_STRING");
         public static string COSMOS_DATABASE_NAME => Environment.GetEnvironmentVariable("COSMOS_DATABASE_NAME");
         public static string JWT_SIGNING_KEY => Environment.GetEnvironmentVariable("JWT_SIGNING_KEY");
         public static string API_URI => Environment.GetEnvironmentVariable("API_URI");
-        public static string WEB_APP_URI => Environment.GetEnvironmentVariable("WEB_APP_URI");
         
         // token expirations
         public const int JWT_EXPIRATION_MINUTES = 15;

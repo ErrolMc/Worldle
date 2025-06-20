@@ -1,6 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordleServer", "WordleServer.csproj", "{CE5508F2-DDDB-4DD9-8BB4-5500F96D52E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordleServer.AppHost", "..\WordleServer.AppHost\WordleServer.AppHost.csproj", "{FE759592-4619-4E67-979B-371B0C9727F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordleServer.ServiceDefaults", "..\WordleServer.ServiceDefaults\WordleServer.ServiceDefaults.csproj", "{F01F47C5-2E24-00BC-7642-58E2A7CBA2A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +19,16 @@ Global
 		{CE5508F2-DDDB-4DD9-8BB4-5500F96D52E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE5508F2-DDDB-4DD9-8BB4-5500F96D52E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE5508F2-DDDB-4DD9-8BB4-5500F96D52E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE759592-4619-4E67-979B-371B0C9727F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE759592-4619-4E67-979B-371B0C9727F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE759592-4619-4E67-979B-371B0C9727F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE759592-4619-4E67-979B-371B0C9727F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F01F47C5-2E24-00BC-7642-58E2A7CBA2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F01F47C5-2E24-00BC-7642-58E2A7CBA2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F01F47C5-2E24-00BC-7642-58E2A7CBA2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F01F47C5-2E24-00BC-7642-58E2A7CBA2A2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

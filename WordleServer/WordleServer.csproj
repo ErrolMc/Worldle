@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -8,12 +8,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Aspire.Microsoft.Azure.Cosmos" Version="9.3.1" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4"/>
-        <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.46.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
+        <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.52.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WordleServer.ServiceDefaults\WordleServer.ServiceDefaults.csproj" />
     </ItemGroup>
 
 </Project>
