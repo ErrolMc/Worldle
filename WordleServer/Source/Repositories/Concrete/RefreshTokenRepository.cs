@@ -10,9 +10,10 @@ namespace WordleServer.DB
         private readonly Container _container;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        public RefreshTokenRepository(Database database, IDataProtectionProvider dataProtectionProvider)
+        public RefreshTokenRepository(CosmosClient cosmosClient, IDataProtectionProvider dataProtectionProvider)
         {
-            _container = database.GetContainer(Constants.REFRESH_TOKENS_CONTAINER_NAME);
+            _container = cosmosClient.GetDatabase(Constants.COSMOS_DATABASE_NAME)
+                .GetContainer(Constants.REFRESH_TOKENS_CONTAINER_NAME);
             _dataProtectionProvider = dataProtectionProvider;
         }
         

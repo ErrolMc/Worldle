@@ -12,10 +12,11 @@ namespace WordleServer.DB
         private readonly Container _container;
         private readonly ILoggerService _logger;
 
-        public UserRepository(Database database, ILoggerService logger)
+        public UserRepository(CosmosClient cosmosClient, ILoggerService logger)
         {
             _logger = logger;
-            _container = database.GetContainer(Constants.USERS_CONTAINER_NAME);
+            _container = cosmosClient.GetDatabase(Constants.COSMOS_DATABASE_NAME)
+                .GetContainer(Constants.USERS_CONTAINER_NAME);
         }
 
         public async Task<User> GetUserByIdAsync(string id)
