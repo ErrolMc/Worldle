@@ -25,7 +25,7 @@ export function useGameLogic(currentWord: string) {
   const lastKey = useRef<string | null>(null);
   const dictionaryService = getDictionaryService();
 
-  const updateBoard = (guess: string) => {
+  const updateBoard = (guess: string): void => {
     setGameState((prevState) => {
       const updatedBoard = [...prevState.board];
       const currentAttemptIndex = prevState.curAttempt;
@@ -43,7 +43,7 @@ export function useGameLogic(currentWord: string) {
     });
   };
 
-  const handleGuess = () => {
+  const handleGuess = (): void => {
     if (currentGuess.current.length !== WORD_LENGTH || gameState.curAttempt === MAX_ATTEMPTS)
       return;
 
@@ -67,7 +67,7 @@ export function useGameLogic(currentWord: string) {
         }
 
         // update the keyboard letter states
-        if (!newKeyboardLetterStates.hasOwnProperty(char)) {
+        if (!Object.prototype.hasOwnProperty.call(newKeyboardLetterStates, char)) {
           newKeyboardLetterStates[char] = state;
         } else if (newKeyboardLetterStates[char] === "absent" && state !== "absent") {
           newKeyboardLetterStates[char] = state;
@@ -100,7 +100,7 @@ export function useGameLogic(currentWord: string) {
     currentGuess.current = "";
   };
 
-  const handleKeyPress = (key: string) => {
+  const handleKeyPress = (key: string): void => {
     if (key === "Enter") {
       handleGuess();
       return;
@@ -118,7 +118,7 @@ export function useGameLogic(currentWord: string) {
     updateBoard(updatedGuess);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
     event.preventDefault();
 
     if (lastKey.current !== event.key) {
@@ -127,7 +127,7 @@ export function useGameLogic(currentWord: string) {
     }
   };
 
-  const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>): void => {
     if (lastKey.current === event.key) {
       lastKey.current = null;
     }

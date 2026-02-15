@@ -1,5 +1,6 @@
 export const WORD_LENGTH : number = 5;
 export const MAX_ATTEMPTS : number = 6;
 
-export const AUTH_API_URL: string = 'https://localhost:7080/api/auth';
-export const GAME_API_URL: string = 'https://localhost:7080/api/game';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://localhost:7080';
+export const AUTH_API_URL: string = `${API_BASE}/api/auth`;
+export const GAME_API_URL: string = `${API_BASE}/api/game`;

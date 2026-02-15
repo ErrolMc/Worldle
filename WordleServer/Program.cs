@@ -15,7 +15,7 @@ namespace WordleServer
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
             IServiceCollection services = builder.Services;
@@ -39,9 +39,10 @@ namespace WordleServer
             services.AddSingleton<ILoggerService>(new ConsoleLogger(LogLevel.Log));
             services.AddHostedService<TokenCleanupService>();
 
+            services.AddSingleton<CosmosClient>(new CosmosClient(Constants.COSMOS_CONNECTION_STRING));
             services.AddSingleton<Database>((s) =>
             {
-                var cosmosClient = new CosmosClient(Constants.COSMOS_CONNECTION_STRING);
+                var cosmosClient = s.GetRequiredService<CosmosClient>();
                 return cosmosClient.GetDatabase(Constants.COSMOS_DATABASE_NAME);
             });
 
@@ -72,6 +73,16 @@ namespace WordleServer
             
             WebApplication app = builder.Build();
 
+            // Ensure Cosmos DB database and containers exist
+            using (var scope = app.Services.CreateScope())
+            {
+                var cosmosClient = scope.ServiceProvider.GetRequiredService<CosmosClient>();
+                var db = await cosmosClient.CreateDatabaseIfNotExistsAsync(Constants.COSMOS_DATABASE_NAME);
+                await db.Database.CreateContainerIfNotExistsAsync(Constants.USERS_CONTAINER_NAME, "/id");
+                await db.Database.CreateContainerIfNotExistsAsync(Constants.GAMES_CONTAINER_NAME, "/userid");
+                await db.Database.CreateContainerIfNotExistsAsync(Constants.REFRESH_TOKENS_CONTAINER_NAME, "/id");
+            }
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -88,7 +99,7 @@ namespace WordleServer
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }
