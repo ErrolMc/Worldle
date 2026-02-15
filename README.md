@@ -1,6 +1,13 @@
 # Wordle Clone
 
-A modern implementation of the popular word-guessing game Wordle, built with .NET 7 backend and React/Electron frontend.
+A modern implementation of the popular word-guessing game Wordle, built with .NET 10 backend and React/Electron frontend.
+
+**Live:** https://worldle-nu.vercel.app
+
+## Deployment
+
+- **Frontend** is deployed to [Vercel](https://vercel.com) automatically on push to `main` via Vercel's GitHub integration.
+- **Backend** is deployed to [Azure App Service](https://azure.microsoft.com/en-us/products/app-service) via GitHub Actions. The workflow is defined in `.github/workflows/deploy-backend.yml` and triggers on pushes to `main` that modify `WordleServer/`.
 
 ## Architecture Overview
 
