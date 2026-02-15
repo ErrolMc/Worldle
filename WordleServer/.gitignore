@@ -1,6 +1,7 @@
 # Rider-specific files
 .idea/
 *.iml
+.vs/
 
 # Build directories
 bin/
