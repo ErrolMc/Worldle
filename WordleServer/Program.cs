@@ -23,7 +23,6 @@ namespace WordleServer
             // Add services to the container.
             services.AddControllers();
             services.AddAuthorization();
-            services.AddDataProtection();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
@@ -91,7 +90,7 @@ namespace WordleServer
             }
             
             app.UseCors();
-            
+
             app.UseHttpsRedirection();
             
             app.UseAuthentication();

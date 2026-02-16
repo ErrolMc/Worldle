@@ -57,7 +57,7 @@ export class AuthService {
 
   static async refreshToken(refreshToken: string): Promise<LoginResponse> {
     try {
-      const response = await fetch(`${AUTH_API_URL}/refresh-token`, {
+      const response = await fetch(`${AUTH_API_URL}/refresh`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

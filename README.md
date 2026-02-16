@@ -1,6 +1,6 @@
 # Wordle Clone
 
-A modern implementation of the popular word-guessing game Wordle, built with .NET 10 backend and React/Electron frontend.
+A modern implementation of the popular word-guessing game Wordle, built with a .NET 10 backend and React/Electron frontend.
 
 **Live:** https://worldle-nu.vercel.app
 
@@ -11,107 +11,62 @@ A modern implementation of the popular word-guessing game Wordle, built with .NE
 
 ## Architecture Overview
 
-### Backend (.NET 7)
+### Backend (.NET 10)
 - **Framework**: ASP.NET Core Web API
 - **Database**: Azure Cosmos DB
-- **Authentication**: Basic authentication
-- **API Documentation**: Swagger/OpenAPI
-- **Key Features**:
-  - RESTful API endpoints
-  - User authentication and authorization
-  - Game state management
-  - Word validation and game logic
-  - Score tracking and statistics
+- **Authentication**: JWT with refresh tokens
+- **API Documentation**: Swagger/OpenAPI (development only)
 
 ### Frontend (React + Electron)
 - **Framework**: React with TypeScript
 - **Desktop App**: Electron
 - **Build Tool**: Vite
-- **Key Features**:
-  - Modern, responsive UI
-  - Cross-platform desktop application
-  - Real-time game state updates
-  - Keyboard input support
-  - Local storage for game progress
-  - Auto-updates via electron-updater
+- **Web Deployment**: Vercel
 
-## API Documentation
+## API Endpoints
 
-### Authentication
-- **POST /api/auth/register**
-  - Register a new user
-  - Returns success response with user details
+### Authentication (`api/auth`)
+- **POST /register** - Register a new user
+- **POST /login** - Authenticate and receive JWT + refresh token
+- **POST /refresh** - Rotate refresh token and issue a new JWT (requires authorization)
 
-- **POST /api/auth/login**
-  - Authenticate user
-  - Returns success response with user details
+### Game (`api/game`)
+- **GET /wotd** - Get the word of the day
+- **POST /report** - Report a game result
+- **GET /has-played** - Check if a user has played today
+- **GET /game-history** - Get a user's game history
 
-### Game
-- **GET /api/game/new**
-  - Start a new game
-  - Returns game ID and initial state
-
-- **POST /api/game/{gameId}/guess**
-  - Submit a word guess
-  - Returns guess result and game state
-
-- **GET /api/game/{gameId}**
-  - Get current game state
-  - Returns game details and progress
-
-### User Stats
-- **GET /api/stats**
-  - Get user statistics
-  - Returns win rate, average attempts, etc.
-
-## Development Guide
+## Development Setup
 
 ### Prerequisites
-- .NET 7 SDK
+- .NET 10 SDK
 - Node.js 18+
-- Azure Cosmos DB account (for backend)
-- Visual Studio 2022 or VS Code (recommended)
+- Azure Cosmos DB account (or Azure Cosmos DB Emulator for local development)
 
-### Backend Setup
-1. Clone the repository
-2. Navigate to `WordleServer` directory
-3. Update `appsettings.json` with your Cosmos DB connection string
-4. Run the following commands:
-   ```bash
-   dotnet restore
-   dotnet build
-   dotnet run
-   ```
-5. Access Swagger UI at `https://localhost:7001/swagger`
+### Environment Variables (Backend)
+| Variable | Description |
+|---|---|
+| `COSMOS_CONNECTION_STRING` | Azure Cosmos DB connection string |
+| `COSMOS_DATABASE_NAME` | Cosmos DB database name |
+| `JWT_SIGNING_KEY` | Secret key for signing JWTs |
+| `API_URI` | Backend API URI (JWT issuer) |
+| `WEB_APP_URI` | Frontend URL (for CORS and JWT audience) |
 
-### Frontend Setup
-1. Navigate to `wordleclient` directory
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start development server:
-   ```bash
-   npm run dev
-   ```
-4. Build for production:
-   ```bash
-   npm run build
-   ```
+### Backend
+```bash
+cd WordleServer
+dotnet restore
+dotnet run
+```
+
+### Frontend
+```bash
+cd wordleclient
+npm install
+npm run dev
+```
 
 ### Building Desktop App
 - Windows: `npm run build:win`
 - macOS: `npm run build:mac`
 - Linux: `npm run build:linux`
-
-### Development Workflow
-1. Backend changes:
-   - Make changes in `WordleServer` project
-   - Update API documentation in Swagger
-   - Test endpoints using Swagger UI
-
-2. Frontend changes:
-   - Modify React components in `src/renderer`
-   - Update Electron main process in `src/main`
-   - Test changes in development mode
-   - Build and test desktop app

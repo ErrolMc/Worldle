@@ -31,11 +31,21 @@ namespace WordleServer.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] LoginRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest("Username and password are required");
+            }
+
+            if (request.Password.Length < 6)
+            {
+                return BadRequest("Password must be at least 6 characters");
+            }
+
             if (!Constants.AllowedAudiences.Contains(request.AudienceURI))
             {
                 return BadRequest("Invalid audience");
             }
-            
+
             if (await _userRepository.GetUserByUsernameAsync(request.Username) != null)
             {
                 return BadRequest("Username already exists");
@@ -62,6 +72,11 @@ namespace WordleServer.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest("Username and password are required");
+            }
+
             if (!Constants.AllowedAudiences.Contains(request.AudienceURI))
             {
                 return BadRequest("Invalid audience");
@@ -85,17 +100,21 @@ namespace WordleServer.Controllers
         }
 
         [HttpPost("refresh")]
-        [Authorize]
         public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(request.RefreshToken))
+                {
+                    return BadRequest("Refresh token is required");
+                }
+
                 (RefreshTokenData tokenData, RefreshTokenValidateState state) =
                     await _refreshTokenRepository.ValidateRefreshToken(request.RefreshToken);
 
                 if (state != RefreshTokenValidateState.Success)
                 {
-                    return BadRequest("Couldn't refresh token");
+                    return Unauthorized("Invalid or expired refresh token");
                 }
 
                 User user = await _userRepository.GetUserByIdAsync(tokenData.UserID);
@@ -113,7 +132,7 @@ namespace WordleServer.Controllers
             catch (Exception ex)
             {
                 _logger.Log($"Error when refreshing token: {ex.Message}", LogLevel.Error);
-                return StatusCode(StatusCodes.Status500InternalServerError, "An error occured while refreshing token");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while refreshing token");
             }
         }
     }
