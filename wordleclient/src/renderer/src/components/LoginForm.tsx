@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthService } from "../services/AuthService";
 import { LoginResponse } from "@renderer/types/AuthTypes";
 import { LOGIN_TOKEN_KEY, USER_ID_KEY, REFRESH_TOKEN_KEY } from "@renderer/types/LocalStorageKeys";
-import { GAME_INIT_ROUTE } from "@renderer/types/RouteNames";
+import { GAME_INIT_ROUTE, QUICK_PLAY_INIT_ROUTE } from "@renderer/types/RouteNames";
 
 import "../styles/LoginRegisterForm.css";
 
@@ -68,6 +68,14 @@ const LoginForm: React.FC<{ setIsLogin: React.Dispatch<React.SetStateAction<bool
         </form>
       </div>
       {error && <div className="error-message">{error}</div>}
+      <div style={{ textAlign: "center", marginTop: "8px" }}>
+        <button
+          onClick={() => navigate(QUICK_PLAY_INIT_ROUTE)}
+          style={{ backgroundColor: "#4a7c59", width: "325px" }}
+        >
+          Quick Play (no login)
+        </button>
+      </div>
     </div>
   );
 };

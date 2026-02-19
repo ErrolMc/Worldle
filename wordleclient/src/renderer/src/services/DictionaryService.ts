@@ -1,12 +1,18 @@
 class DictionaryService {
   private dictionary: Set<string>;
+  private words: string[];
 
   constructor(words: string[]) {
     this.dictionary = new Set(words);
+    this.words = words;
   }
 
   public isWordValid(word: string): boolean {
     return this.dictionary.has(word.toLowerCase());
+  }
+
+  public getRandomWord(): string {
+    return this.words[Math.floor(Math.random() * this.words.length)];
   }
 }
 

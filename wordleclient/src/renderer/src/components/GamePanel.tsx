@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useGameLogic } from "../hooks/useGameLogic";
-import { CURRENT_WORD_KEY, GAME_RESULT_KEY } from "@renderer/types/LocalStorageKeys";
-import { GAME_INIT_ROUTE, GAME_OVER_ROUTE } from "@renderer/types/RouteNames";
+import { CURRENT_WORD_KEY, GAME_RESULT_KEY, QUICK_PLAY_KEY } from "@renderer/types/LocalStorageKeys";
+import { GAME_INIT_ROUTE, GAME_OVER_ROUTE, QUICK_PLAY_RESULT_ROUTE } from "@renderer/types/RouteNames";
 import { GameResult } from "@renderer/types/GameTypes";
 
 import Popup from "./Popup";
@@ -13,6 +13,7 @@ import "../styles/GamePanel.css";
 const GamePanel: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const currentWord: string | null = localStorage.getItem(CURRENT_WORD_KEY);
+  const isQuickPlay: boolean = localStorage.getItem(QUICK_PLAY_KEY) === "true";
 
   if (!currentWord) {
     // if the word is not available, redirect back to the initializer
@@ -46,8 +47,8 @@ const GamePanel: React.FC = () => {
         } as GameResult)
       );
 
-      // Navigate to GameOver component
-      navigate(GAME_OVER_ROUTE);
+      // Navigate to result (quick play skips score reporting)
+      navigate(isQuickPlay ? QUICK_PLAY_RESULT_ROUTE : GAME_OVER_ROUTE);
     }
   }, [gameOver, isWin]);
 

@@ -4,3 +4,5 @@ export const PLAY_ROUTE: string = "/play";
 export const ALREADY_PLAYED_ROUTE: string = "/already-played";
 export const GAME_OVER_ROUTE: string = "/game-over";
 export const GAME_HISTORY_ROUTE: string = "/game-history";
+export const QUICK_PLAY_INIT_ROUTE: string = "/quick-play";
+export const QUICK_PLAY_RESULT_ROUTE: string = "/quick-play-result";
